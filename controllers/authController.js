@@ -39,13 +39,13 @@ function ensureAuthenticated(req, res, next) {
   var token = req.headers.authorization.split(' ')[1];
   var payload = null;
   try {
-    payload = jwt.verify(token, process.env.SECRET);//???error here
-    console.log(payload);
+    payload = jwt.verify(token, process.env.SECRET);
   }
   catch (err) {
     return res.status(401).send({ error: "TokenInvalid" });
   }
-
+  console.clear();
+  console.log('date '+moment().toDate())
   if (payload.exp <= moment().unix()) {
     return res.status(401).send({ error: 'TokenExpired' });
   }

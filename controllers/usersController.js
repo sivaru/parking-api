@@ -23,7 +23,7 @@ async function createUser(req, res) {
 
 async function deleteUser(req, res) {
   try {
-    const user = User.findByIdAndRemove(req.params.id);
+    const user = await User.findByIdAndRemove(req.params.id);
     respond(res, 204, {})
   } catch (error) {
     console.log('error');
