@@ -13,19 +13,36 @@ const respond = function (res, status, content) {
   res.json(content)
 }
 
-async function login(req, res) {
-  try{
-    const user = await User.findOne({email: req.body.email});
+const getCleanUser = (user) => {
+  const cleanUser = {
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    admin: user.admin,
+    id: user.id
+  }
+  return cleanUser;
+}
 
-    const validPassword = bcrypt.compareSync(req.body.password, user.password);
-  
-    if (validPassword){
-      var token = jwt.sign({ id: user._id }, process.env.SECRET, {
-        expiresIn: 3600 // expires in 24 hours
-      });
-      respond(res, 200, `Bearer ${token}`);
-    }
-  }catch(e){
+async function login(req, res) {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    if (user) {
+      const validPassword = bcrypt.compareSync(req.body.password, user.password);
+      const cleanUser = getCleanUser(user);
+
+      if (validPassword) {
+        var token = jwt.sign(cleanUser, process.env.SECRET, {
+          expiresIn: 3600 // expires in 24 hours
+        });
+        respond(res, 200, token);
+      } else {
+        respond(res, 401, { error: "Wrong Password or user" })
+      }
+    } else
+      respond(res, 401, { error: "Wrong Password or user" })
+
+  } catch (e) {
     console.log(`Error: ${e}`);
   }
 }
@@ -44,20 +61,19 @@ function ensureAuthenticated(req, res, next) {
   catch (err) {
     return res.status(401).send({ error: "TokenInvalid" });
   }
-  console.clear();
-  console.log('date '+moment().toDate())
+  console.log('date ' + moment().toDate())
   if (payload.exp <= moment().unix()) {
     return res.status(401).send({ error: 'TokenExpired' });
   }
   // check if the user exists
-  User.findById(payload.id, function(err, user){
-    if (!user){
-      return res.status(401).send({error: 'UserNotFound'});
+  User.findById(payload.id, function (err, user) {
+    if (!user) {
+      return res.status(401).send({ error: 'UserNotFound' });
     } else {
-      req.user = payload.sub;
+      req.user = getCleanUser(user);
       next();
     }
   });
 };
 
-module.exports = {login, ensureAuthenticated};
+module.exports = { login, ensureAuthenticated };

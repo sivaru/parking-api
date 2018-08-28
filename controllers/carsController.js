@@ -58,7 +58,7 @@ async function updateCarById(req, res) {
 
 async function getCarById(req, res) {
   try {
-    const car = await Car.findById(req.params.id);
+    const car = await Car.findById(req.params.id).populate({path: "owner"});
     respond(res, 200, { car });
   } catch (e) {
     console.log('An error :', e)

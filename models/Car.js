@@ -1,15 +1,6 @@
 const mongoose = require('mongoose');
+const User = mongoose.model('User');
 
-const ownerSchema = mongoose.Schema({
-  id:{
-    type: String,
-    required:true
-  },
-  name:{
-    type: String,
-    required: true
-  }
-});
 const carSchema = mongoose.Schema({
   plateNumber: {
     type: String,
@@ -27,7 +18,8 @@ const carSchema = mongoose.Schema({
     required: true
   },
   owner:{
-   type:  ownerSchema
+   type:  mongoose.Schema.ObjectId,
+   ref: 'User'
   }
 
 });

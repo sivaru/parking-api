@@ -14,8 +14,8 @@ const parkingSpacesController = require('../controllers/parkingSpacesController'
 router.post('/login', authController.login);
 
 /* User routes */
-router.post('/users', usersController.createUser);
-router.get('/users', usersController.getUsers);
+router.post('/users',  usersController.createUser);
+router.get('/users',authController.ensureAuthenticated, usersController.getUsers);
 router.get('/users/:id', usersController.getUserById);
 router.put('/users/:id', usersController.updateUserById);
 router.delete('/users/:id',usersController.deleteUser);

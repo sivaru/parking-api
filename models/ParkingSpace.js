@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const User = mongoose.model('User');
 
 const parkingSpaceSchema = mongoose.Schema({
   number: {
@@ -16,7 +17,8 @@ const parkingSpaceSchema = mongoose.Schema({
     default: false
   },
   assignedUser: {
-    type: String,
+    type: mongoose.Schema.ObjectId,
+    ref: "User"
   },
   freePeriodStart:{
     type: Date,

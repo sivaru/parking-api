@@ -33,7 +33,7 @@ async function deleteParkingSpace(req, res) {
 
 async function getParkingSpaces(req, res) {
   try {
-    const parkingSpaces = await ParkingSpace.find();
+    const parkingSpaces = await ParkingSpace.find().populate({path: "assignedUser"});
     respond(res, 200, { parkingSpaces });
   } catch (e) {
     console.log('An error :', e)
