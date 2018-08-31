@@ -9,6 +9,7 @@ const parkingSpaceSchema = mongoose.Schema({
   section: {
     type: String,
     maxlength: 1,
+	uppercase: true,
     required: true
   },
   isAssigned:{
@@ -18,8 +19,14 @@ const parkingSpaceSchema = mongoose.Schema({
   },
   assignedUser: {
     type: mongoose.Schema.ObjectId,
-    ref: "User"
+    ref: "User",
+	default: null
   },
+  freePeriod:{
+	type: Boolean,
+	required: true,
+	default: false
+  }
   freePeriodStart:{
     type: Date,
     default: null

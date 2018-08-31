@@ -10,6 +10,7 @@ const respond = function (res, status, content) {
 
 async function createUser(req, res) {
   try {
+    console.log(req.body)
     const user = new User(req.body);
     await user.save();
     respond(res, 201, { user });
@@ -47,7 +48,7 @@ async function updateUserById(req, res) {
       new: true,
       runValidators: true
     }).exec()
-    respond(res, 200, { job })
+    respond(res, 200, { user })
   } catch (e) {
     console.log('An error ocurred:', e)
     next(e)
@@ -58,7 +59,7 @@ async function updateUserById(req, res) {
 async function getUserById(req, res) {
   try {
     const user = await User.findById(req.params.id);
-    respond(res, 200, { job });
+    respond(res, 200, { user });
   } catch (e) {
     console.log('An error :', e)
     //this will eventually be handled by your error handling middleware

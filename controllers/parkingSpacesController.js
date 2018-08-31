@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 require('../models/ParkingSpace');
 const ParkingSpace = mongoose.model('ParkingSpace');
+const User = mongoose.model('User');
 
 // JSON response utility function
 const respond = function (res, status, content) {
@@ -33,7 +34,7 @@ async function deleteParkingSpace(req, res) {
 
 async function getParkingSpaces(req, res) {
   try {
-    const parkingSpaces = await ParkingSpace.find().populate({path: "assignedUser"});
+    const parkingSpaces = await ParkingSpace.find().populate( 'assignedUser', 'firstName lastName');
     respond(res, 200, { parkingSpaces });
   } catch (e) {
     console.log('An error :', e)
@@ -47,7 +48,8 @@ async function updateParkingSpaceById(req, res) {
     const parkingSpace = await ParkingSpace.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true
-    }).exec()
+    }).populate('assignedUser', 'firstName lastName').exec();
+	
     respond(res, 200, { parkingSpace })
   } catch (e) {
     console.log('An error ocurred:', e)

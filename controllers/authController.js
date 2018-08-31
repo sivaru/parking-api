@@ -33,9 +33,9 @@ async function login(req, res) {
 
       if (validPassword) {
         var token = jwt.sign(cleanUser, process.env.SECRET, {
-          expiresIn: 3600 // expires in 24 hours
+          expiresIn: 3600 // expires in 1 hour
         });
-        respond(res, 200, token);
+        respond(res, 200, {token, cleanUser});
       } else {
         respond(res, 401, { error: "Wrong Password or user" })
       }
