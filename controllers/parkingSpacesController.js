@@ -11,7 +11,8 @@ const respond = function (res, status, content) {
 
 async function createParkingSpace(req, res) {
   try {
-    const parkingSpace = new ParkingSpace(req.body);
+    let parkingSpace = new ParkingSpace(req.body);
+    parkingSpace = await ParkingSpace.populate(parkingSpace, { path: 'assignedUser', select: 'firstName lastName' });
     await parkingSpace.save();
     respond(res, 201, { parkingSpace });
   } catch (e) {
@@ -34,7 +35,7 @@ async function deleteParkingSpace(req, res) {
 
 async function getParkingSpaces(req, res) {
   try {
-    const parkingSpaces = await ParkingSpace.find().populate( 'assignedUser', 'firstName lastName');
+    const parkingSpaces = await ParkingSpace.find().populate('assignedUser', 'firstName lastName');
     respond(res, 200, { parkingSpaces });
   } catch (e) {
     console.log('An error :', e)
@@ -43,20 +44,37 @@ async function getParkingSpaces(req, res) {
   }
 }
 
+
 async function updateParkingSpaceById(req, res) {
   try {
+    const oldParking = await ParkingSpace.findById(req.params.id);
+
+    if (oldParking.isAssigned === true) {
+      const user = await User.findByIdAndUpdate(oldParking.assignedUser, { hasParking: false });
+    }
+
+
+    if (req.body.isAssigned) {
+      const user = await User.findById(req.body.assignedUser);
+      if (user.hasParking) {
+        throw new Error("This user already has a parking space assigned")
+      }
+    }
     const parkingSpace = await ParkingSpace.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true
     }).populate('assignedUser', 'firstName lastName').exec();
-	
+
+    if (parkingSpace.isAssigned) {
+      const user = await User.findByIdAndUpdate(parkingSpace.assignedUser, { hasParking: true });
+    }
+
     respond(res, 200, { parkingSpace })
   } catch (e) {
-    console.log('An error ocurred:', e)
-    next(e)
+    console.log('An error ocurred:', e.message)
+    respond(res, 401, { message: e.code === 11000 ? 'This parking number is already in use' : e.message })
   }
 }
-
 
 async function getParkingSpaceById(req, res) {
   try {

@@ -28,7 +28,9 @@ async function login(req, res) {
   try {
     const user = await User.findOne({ email: req.body.email });
     if (user) {
+      console.log(req.body.password)
       const validPassword = bcrypt.compareSync(req.body.password, user.password);
+      console.log(validPassword)
       const cleanUser = getCleanUser(user);
 
       if (validPassword) {
@@ -37,10 +39,10 @@ async function login(req, res) {
         });
         respond(res, 200, {token, cleanUser});
       } else {
-        respond(res, 401, { error: "Wrong Password or user" })
+        respond(res, 401, { message: "Wrong Password or user" })
       }
     } else
-      respond(res, 401, { error: "Wrong Password or user" })
+      respond(res, 401, { message: "Wrong Password or user" })
 
   } catch (e) {
     console.log(`Error: ${e}`);

@@ -24,11 +24,18 @@ const userSchema = mongoose.Schema({
     type: Boolean,
     required: true,
     default: false
+  },
+  hasParking:{
+    type: Boolean,
+    required: true, 
+    default: false
   }
 })
 
 /*Encrypt the user's password */
-userSchema.pre('save', function (next) {
+userSchema.pre('save', encryptPassword);
+
+function encryptPassword (next) {
   let user = this;
   if (!user.isModified('password')) {
     return next();
@@ -39,7 +46,7 @@ userSchema.pre('save', function (next) {
       next();
     });
   });
-});
+}
 
 userSchema.methods.comparePassword = () => {
   bcrypt.compare(password, this.password, (err, isMatch) => {

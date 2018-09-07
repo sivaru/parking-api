@@ -44,14 +44,16 @@ async function getUsers(req, res) {
 
 async function updateUserById(req, res) {
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true
-    }).exec()
+    const user = await User.findById(req.params.id);
+    Object.assign(user, req.body);
+    await user.save();
     respond(res, 200, { user })
   } catch (e) {
     console.log('An error ocurred:', e)
-    next(e)
+    if(e.code === 11000)
+    respond(res, 401, {message: 'This email is already in use.'})
+    else
+    respond(res, 401, {message: 'There was an error.'})
   }
 }
 

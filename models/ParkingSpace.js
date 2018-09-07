@@ -22,11 +22,11 @@ const parkingSpaceSchema = mongoose.Schema({
     ref: "User",
 	default: null
   },
-  freePeriod:{
+  freePeriod: {
 	type: Boolean,
 	required: true,
 	default: false
-  }
+  },
   freePeriodStart:{
     type: Date,
     default: null
