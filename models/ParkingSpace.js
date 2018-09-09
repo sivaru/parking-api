@@ -9,10 +9,10 @@ const parkingSpaceSchema = mongoose.Schema({
   section: {
     type: String,
     maxlength: 1,
-	uppercase: true,
+    uppercase: true,
     required: true
   },
-  isAssigned:{
+  isAssigned: {
     type: Boolean,
     required: true,
     default: false
@@ -20,23 +20,24 @@ const parkingSpaceSchema = mongoose.Schema({
   assignedUser: {
     type: mongoose.Schema.ObjectId,
     ref: "User",
-	default: null
-  },
-  freePeriod: {
-	type: Boolean,
-	required: true,
-	default: false
-  },
-  freePeriodStart:{
-    type: Date,
     default: null
   },
-  freePeriodEnd:{
+  freePeriod: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
+  freePeriodStart: {
+    type: Date,
+    min: new Date().setHours(0,0,0,0),
+    default: null
+  },
+  freePeriodEnd: {
     type: Date,
     default: null
   }
 });
 
-parkingSpaceSchema.index({ number: 1,section: 1 }, { unique: true });
+parkingSpaceSchema.index({ number: 1, section: 1 }, { unique: true });
 
 module.exports = mongoose.model('ParkingSpace', parkingSpaceSchema);

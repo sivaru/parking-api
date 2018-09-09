@@ -11,13 +11,19 @@ const respond = function (res, status, content) {
 
 async function createParkingSpace(req, res) {
   try {
+    if (req.body.isAssigned) {
+      const user = await User.findById(req.body.assignedUser);
+      if (user.hasParking) {
+        throw new Error("This user already has a parking space assigned")
+      }
+    }
     let parkingSpace = new ParkingSpace(req.body);
+
     parkingSpace = await ParkingSpace.populate(parkingSpace, { path: 'assignedUser', select: 'firstName lastName' });
     await parkingSpace.save();
     respond(res, 201, { parkingSpace });
   } catch (e) {
-    if (e.code === 11000)
-      respond(res, 409, { message: 'This parking is already in created' });
+    respond(res, 409, { message: e.code === 11000 ? 'This parking number is already in use' : e.message })
     console.log('An error :', e)
     next(e)
   }
@@ -53,6 +59,7 @@ async function updateParkingSpaceById(req, res) {
       const user = await User.findByIdAndUpdate(oldParking.assignedUser, { hasParking: false });
     }
 
+    console.log(req.body)
 
     if (req.body.isAssigned) {
       const user = await User.findById(req.body.assignedUser);

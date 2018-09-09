@@ -6,6 +6,7 @@ const usersController = require('../controllers/usersController');
 const carsController = require('../controllers/carsController');
 const authController = require('../controllers/authController');
 const parkingSpacesController = require('../controllers/parkingSpacesController');
+const newsController = require('../controllers/newsController');
 
 
 
@@ -33,6 +34,12 @@ router.get('/cars', carsController.getCars);
 router.get('/cars/:id', carsController.getCarById);
 router.put('/cars/:id', carsController.updateCarById);
 router.delete('/cars/:id', carsController.deleteCar);
+
+router.post('/news', newsController.createNew);
+router.get('/news', newsController.getNews);
+router.get('/news/:id', newsController.getNewById);
+router.put('/news/:id', newsController.updateNewById);
+router.delete('/news/:id', newsController.deleteNew);
 
 
 module.exports = router;
